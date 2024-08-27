@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from ..models import Carlist
+from django.contrib.auth.models import User 
+
 
 def alphanumeric(value):
     if not str(value).isalnum():
@@ -34,3 +36,30 @@ class CarSerializer(serializers.Serializer):
         if data['name'] == data['description']:
             raise serializers.ValidationError("name and description cannot be same")
         return data
+    
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password')
+    
+    def create(self, validated_data):
+        email = validated_data.get('email', None)
+        if email is None:
+            raise ValueError("Email field is required")
+        user =  User.objects.create_user(
+            validated_data['username'],
+            validated_data['email'],
+            validated_data['password']
+        )
+        return user
+
+class LoginSerializer(serializers.Serializer):
+    username =  serializers.CharField(required = True)
+    password =  serializers.CharField(required = True, write_only = True)
