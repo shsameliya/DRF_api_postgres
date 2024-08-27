@@ -53,7 +53,6 @@ def car_detail_view(request, pk):
             return Response({'error': 'Car not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
-
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
